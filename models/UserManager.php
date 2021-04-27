@@ -14,3 +14,17 @@ function GetAllUsers()
   $response = $PDO->query("SELECT * FROM user ORDER BY nickname ASC");
   return $response->fetchAll();
 }
+
+function GetUserIdFromUserAndPassword($username, $password)
+{
+  global $PDO;
+  $response = $PDO->query("SELECT * FROM user WHERE nickname = '$username' AND password = '$password'");
+  $users = $response->fetchAll();
+  $nbOfUsersWithThisPasswordAndNickname = count($users);
+  if ($nbOfUsersWithThisPasswordAndNickname == 1) {
+    $connectingUser = $users[0];
+    return $connectingUser['id'];
+  } else {
+    return -1;
+  }
+}

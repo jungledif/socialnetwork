@@ -1,6 +1,10 @@
 <?php
 
-$action = $_GET["action"] ?? "display";
+$action = "display";
+
+if (isset($_GET["action"])) {
+  $action = $_GET["action"];
+}
 
 switch ($action) {
 
@@ -9,11 +13,26 @@ switch ($action) {
     break;
 
   case 'logout':
-    // code...
+    if (isset($_SESSION['userId'])) {
+      unset($_SESSION['userId']);
+    }
+    header('Location: ?action=display');
     break;
 
   case 'login':
-    // code...
+    include "../models/UserManager.php";
+    if (isset($_POST['username']) && isset($_POST['password'])) {
+      $userId = GetUserIdFromUserAndPassword($_POST['username'], $_POST['password']);
+      if ($userId > 0) {
+        $_SESSION['userId'] = $userId;
+        header('Location: ?action=display');
+      } else {
+        $errorMsg = "Wrong login and/or password.";
+        include "../views/LoginForm.php";
+      }
+    } else {
+      include "../views/LoginForm.php";
+    }
     break;
 
   case 'newMsg':
@@ -32,13 +51,14 @@ switch ($action) {
     } else {
       $posts = GetAllPosts();
     }
+
     include "../models/CommentManager.php";
     $comments = array();
 
     foreach ($posts as $onePost) {
       $postId = $onePost['id'];
-      $commentForThisPostId = GetAllCommentsFromPostId($postId);
-      $comment[$postId] = $commentsForThisPostId;
+      $commentsForThisPostId = GetAllCommentsFromPostId($postId);
+      $comments[$postId] = $commentsForThisPostId;
     }
 
     include "../views/DisplayPosts.php";
