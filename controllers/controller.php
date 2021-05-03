@@ -8,10 +8,6 @@ if (isset($_GET["action"])) {
 
 switch ($action) {
 
-  case 'register':
-    // code...
-    break;
-
   case 'logout':
     if (isset($_SESSION['userId'])) {
       unset($_SESSION['userId']);
@@ -44,7 +40,11 @@ switch ($action) {
     break;
 
   case 'newComment':
-    // code...
+    include "../models/CommentManager.php";
+    if (isset($_SESSION['userId']) && isset($_POST['postId']) && isset($_POST['comment'])) {
+      CreateNewComment($_SESSION['userId'], $_POST['postId'], $_POST['comment']);
+    }
+    header('Location: ?action=display');
     break;
 
   case 'display':
@@ -67,6 +67,7 @@ switch ($action) {
 
     include "../views/DisplayPosts.php";
     break;
+
   case 'register':
     include "../models/UserManager.php";
     if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passwordRetype'])) {
